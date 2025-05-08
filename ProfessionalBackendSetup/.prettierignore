@@ -1,0 +1,12 @@
+/.vscode
+/node_modules
+/dist
+/public
+/logs
+/.gitignore
+/.prettierignore
+/.prettierrc
+
+*.env
+.env
+.env.*

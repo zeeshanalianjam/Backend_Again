@@ -1,0 +1,23 @@
+{
+  "name": "01_datamodeling",
+  "version": "1.0.0",
+  "description": "this is a data modeling practice file",
+  "keywords": [
+    "data",
+    "modeling",
+    "backend",
+    "chai",
+    "with",
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "Zeeshan Ali Anjam",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "mongoose": "^8.14.1"
+  }
+}

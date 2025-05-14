@@ -14,8 +14,10 @@ const registerUser = asyncHandler(async (req, res) => {
     // check create user in database - remove password and refreshToken from the response
     // return the response
 
-   const {userName, fullName, email, password} = req.body()
-   console.log("email", email);
+   const {userName, fullName, email, password} = req.body
+   if(userName === undefined){
+    throw new apiError(400, null, "Please provide username", false)
+   }
 
    if([userName, fullName, email, password].some((field) => field?.trim() === "")){
         throw new apiError(400, null, "Please fill all the fields", false)

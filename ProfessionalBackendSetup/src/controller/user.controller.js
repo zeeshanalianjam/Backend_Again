@@ -3,6 +3,7 @@ import {asyncHandler} from '../utils/asyncHandler.js'
 import { fileUploadOnCloudinary } from '../utils/cloudinary.js';
 import { User } from '../models/user.models.js';
 import { apiResponse } from '../utils/apiResponse.js';
+import jwt from 'jsonwebtoken'
 
 const generateAccessAndRefreshTokens = async(userId) => {
    try {
@@ -23,6 +24,7 @@ const generateAccessAndRefreshTokens = async(userId) => {
    }
 }
 
+// register user Api
 const registerUser = asyncHandler(async (req, res) => {
     // get the data from user 
     // set the validation - all fields are required
@@ -103,6 +105,7 @@ let avatarLocalPath;
    
 })
 
+// login user Api
 const loginUser = asyncHandler(async (req, res) => {
    //  get the data from the user 
    // set the validation of data - all fields are required
@@ -148,6 +151,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 })
 
+// logout user Api
 const logoutUser = asyncHandler(async (req, res) => {
 
   await User.findByIdAndUpdate(
@@ -173,4 +177,48 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 })
 
-export {registerUser, loginUser, logoutUser}
+// refresh token Api
+const refreshAccessTokens = asyncHandler(async (req, res) => {
+   
+  try {
+    const inCommingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+ 
+    if(!inCommingRefreshToken){
+       throw new apiError(401, null, "Unauthorized request")
+    }
+ 
+   const decodedToken = jwt.verify(inCommingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
+ 
+   if(!decodedToken){
+     throw new apiError(401, null, "Invalid refreshToken")
+   }
+ 
+   const user = await User.findById(decodedToken._id).select("-password -refreshToken")
+ 
+   if(!user){
+     throw new apiError(401, null, "Invalid refreshToken or used")
+   }
+ 
+   if(user.refreshToken !== inCommingRefreshToken){
+     throw new apiError(401, null, "RefreshToken is expired or used")
+   }
+ 
+   const {accessToken, newRefreshToken} = await generateAccessAndRefreshTokens(user._id)
+ 
+   const options = {
+     httpOnly: true,
+     secure: true
+   }
+ 
+   return res
+   .status(200)
+   .cookie("accessToken", accessToken, options)
+   .cookie("refreshToken", newRefreshToken, options)
+   .json(new apiResponse(200, {user, accessToken, refreshToken: newRefreshToken}, "Access token refreshed successfully..."))
+  } catch (error) {
+    throw new apiError(401, null, "Unauthorized request")
+  }
+
+})
+
+export {registerUser, loginUser, logoutUser, refreshAccessTokens}

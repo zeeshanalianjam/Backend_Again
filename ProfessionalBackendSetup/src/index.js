@@ -15,7 +15,7 @@ connectDB().then(() => {
         console.log("Error in connecting to the database from express", error);
     })
     app.listen(process.env.PORT, () => {
-        console.log(`Server is Running at http://localhost:${process.env.PORT}`);
+        console.log(`Server is Running at http://localhost:${process.env.PORT}\n`);
         
     })
 })

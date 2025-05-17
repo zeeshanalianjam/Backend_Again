@@ -13,8 +13,8 @@ router.route('/register').post(upload.fields([
 router.route("/login").post(loginUser)
 
 // secured routes
-router.route("logout").post(jwtVerify ,logoutUser)
-router.route("refresh-token").post( refreshAccessTokens)
+router.route("/logout").post(jwtVerify ,logoutUser)
+router.route("/refresh-token").post( refreshAccessTokens)
 
 export {router as userRouter}
 
